@@ -1,0 +1,134 @@
+version: '3'
+services:
+  api-gateway:
+    build: "./api_gateway"
+    image: eu.gcr.io/central-beach-194106/ordershop/api-gateway:latest
+    environment:
+      - EVENT_STORE_HOSTNAME=event-store
+      - MESSAGE_QUEUE_HOSTNAME=message-queue
+    ports:
+      - "5000:5000"
+    depends_on:
+      - event-store
+      - message-queue
+  billing-service:
+    build: "./billing_service"
+    image: eu.gcr.io/central-beach-194106/ordershop/billing-service:latest
+    environment:
+      - EVENT_STORE_HOSTNAME=event-store
+      - MESSAGE_QUEUE_HOSTNAME=message-queue
+    depends_on:
+      - event-store
+      - message-queue
+  cart-service:
+    build: "./cart_service"
+    image: eu.gcr.io/central-beach-194106/ordershop/cart-service:latest
+    environment:
+      - EVENT_STORE_HOSTNAME=event-store
+      - MESSAGE_QUEUE_HOSTNAME=message-queue
+    depends_on:
+      - event-store
+      - message-queue
+  crm-service:
+    build: "./crm_service"
+    image: eu.gcr.io/central-beach-194106/ordershop/crm-service:latest
+    environment:
+      - EVENT_STORE_HOSTNAME=event-store
+      - MESSAGE_QUEUE_HOSTNAME=message-queue
+    depends_on:
+      - event-store
+      - message-queue
+  customer-service:
+    build: "./customer_service"
+    image: eu.gcr.io/central-beach-194106/ordershop/customer-service:latest
+    environment:
+      - EVENT_STORE_HOSTNAME=event-store
+      - MESSAGE_QUEUE_HOSTNAME=message-queue
+    depends_on:
+      - event-store
+      - message-queue
+  inventory-service:
+    build: "./inventory_service"
+    image: eu.gcr.io/central-beach-194106/ordershop/inventory-service:latest
+    environment:
+      - EVENT_STORE_HOSTNAME=event-store
+      - MESSAGE_QUEUE_HOSTNAME=message-queue
+    depends_on:
+      - event-store
+      - message-queue
+  mail-service:
+    build: "./mail_service"
+    image: eu.gcr.io/central-beach-194106/ordershop/mail-service:latest
+    environment:
+      - EVENT_STORE_HOSTNAME=event-store
+      - MESSAGE_QUEUE_HOSTNAME=message-queue
+    depends_on:
+      - event-store
+      - message-queue
+  order-service:
+    build: "./order_service"
+    image: eu.gcr.io/central-beach-194106/ordershop/order-service:latest
+    environment:
+      - EVENT_STORE_HOSTNAME=event-store
+      - MESSAGE_QUEUE_HOSTNAME=message-queue
+    depends_on:
+      - event-store
+      - message-queue
+  product-service:
+    build: "./product_service"
+    image: eu.gcr.io/central-beach-194106/ordershop/product-service:latest
+    environment:
+      - EVENT_STORE_HOSTNAME=event-store
+      - MESSAGE_QUEUE_HOSTNAME=message-queue
+    depends_on:
+      - event-store
+      - message-queue
+  shipping-service:
+    build: "./shipping_service"
+    image: eu.gcr.io/central-beach-194106/ordershop/shipping-serivce:latest
+    environment:
+      - EVENT_STORE_HOSTNAME=event-store
+      - MESSAGE_QUEUE_HOSTNAME=message-queue
+    depends_on:
+      - event-store
+      - message-queue
+  read-model:
+    build: "./read_model"
+    image: eu.gcr.io/central-beach-194106/ordershop/read-model:latest
+    environment:
+      - EVENT_STORE_HOSTNAME=event-store
+      - MESSAGE_QUEUE_HOSTNAME=message-queue
+      - READ_MODEL_REDIS_HOST=redis
+      - READ_MODEL_REDIS_PORT=6379
+    depends_on:
+      - event-store
+      - message-queue
+      - redis
+  event-store:
+    build: "./event_store"
+    image: eu.gcr.io/central-beach-194106/ordershop/event-store:latest
+    environment:
+      - EVENT_STORE_REDIS_HOST=redis
+      - EVENT_STORE_REDIS_PORT=6379
+      - EVENT_STORE_MAX_WORKERS=100
+    depends_on:
+      - redis
+  message-queue:
+    build: "./message_queue"
+    image: eu.gcr.io/central-beach-194106/ordershop/message-queue:latest
+    environment:
+      - MESSAGE_QUEUE_REDIS_HOST=redis
+      - MESSAGE_QUEUE_REDIS_PORT=6379
+      - MESSAGE_QUEUE_MAX_WORKERS=100
+    depends_on:
+      - redis
+  redis-insight:
+    image: redislabs/redisinsight
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"

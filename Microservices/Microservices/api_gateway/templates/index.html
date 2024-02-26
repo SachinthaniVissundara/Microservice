@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>OrderShop v2</title>
+    <script src="{{ url_for('static', filename='socket.io-2.2.0.js') }}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='jquery-3.4.1.js') }}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='json-viewer-1.4.0/jquery.json-viewer.js') }}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='jquery-ui-1.12.1/jquery-ui.js') }}" type="text/javascript" charset="utf-8"></script>
+    <link href="{{ url_for('static', filename='json-viewer-1.4.0/jquery.json-viewer.css') }}" type="text/css" rel="stylesheet">
+    <style>
+      body { padding: 10px }
+      .container { width: 100%; padding: 10px }
+      #left { float: left; width: 50% }
+      #right { float: right; width: 50% }
+    </style>
+    <script type="text/javascript" charset="utf-8">
+      $(function() {
+        $(".widget input[type=submit], .widget a, .widget button").button();
+      });
+    </script>
+  </head>
+  <body>
+    <h1>OrderShop v2</h1>
+    <section class="container">
+      <div id="left">
+        <h2>Events</h2>
+        <button id="reset" class="ui-button ui-widget ui-corner-all">Reset</button>
+        <pre id="events"></pre>
+        <script type="text/javascript" charset="utf-8">
+        $(function() {
+          $('#reset').click( function(event) {
+            event.preventDefault();
+            events = []
+            $('#events').jsonViewer(events);
+          });
+        });
+        </script>
+      </div>
+      <div id="right">
+        <h2>State</h2>
+        <button id="refresh" class="ui-button ui-widget ui-corner-all">Refresh</button>
+        <pre id="report"></pre>
+        <script type="text/javascript" charset="utf-8">
+        $(function() {
+          $('#refresh').click( function(event) {
+            event.preventDefault();
+            $.ajax({
+              'url': '/report'
+            }).done(function(data) {
+              $('#report').jsonViewer(data.result, {collapsed: true, rootCollapsable: false});
+            });
+          });
+        });
+        </script>
+      </div>
+      <script type="text/javascript" charset="utf-8">
+      $(function() {
+        var socket = io();
+        socket.on('connect', function() {
+          console.log('connected to WS server');
+        });
+        events = [];
+        socket.on('entity_event', function(data) {
+          event = JSON.parse(data);
+          event.data  = JSON.parse(event.data);
+          events.unshift(event);
+          $('#events').jsonViewer(events);
+        });
+      });
+      </script>
+    </section>
+  </body>
+</html>
